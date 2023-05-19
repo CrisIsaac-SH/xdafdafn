@@ -1,237 +1,274 @@
-import java.io.*;
-
-import java.util.*;
 /*
 	Utilice esta clase para guardar la informacion de su
 	AFD. NO DEBE CAMBIAR LOS NOMBRES DE LA CLASE NI DE LOS 
 	METODOS que ya existen, sin embargo, usted es libre de 
 	agregar los campos y metodos que desee.
 */
-public class AFD{ 
-  String file;
-  
+import java.io.*;
+import java.util.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Arrays;
+
+public class AFD {
+
 	/*
-		Implemente el constructor de la clase AFD
-		que recibe como argumento un string que 
-		representa el path del archivo que contiene
-		la informacion del afd (i.e. "Documentos/archivo.afd").
-		Puede utilizar la estructura de datos que desee
-	*/
-	public AFD(String path){
-    this.file = path;
+	 * Implemente el constructor de la clase AFD
+	 * que recibe como argumento un string que
+	 * representa el path del archivo que contiene
+	 * la informacion del afd (i.e. "Documentos/archivo.afd").
+	 * Puede utilizar la estructura de datos que desee
+	 */
+	public static BufferedReader Buff;
+	public String string_1 = " ";
+	public LinkedList<String> var_Arch;
+	public static String nombreArchivo;
+	// -------------------------------------
+	public char[] finaal;
+	public String[] repeticiones;
+	public int estados;
+	public char[] alfabetoo;
+	// -------------------------------------
+	public LinkedList<String> tranciss;
+	public int cantidad_trancis;
+	public String[] Trans;
+	// -------------------------------------
+	public static boolean Boolean;
+	public static String accept;
+	// -------------------------------------
+	public String datosCuerda;
+	public LinkedList<String> cuerdaValida;
+	// -------------------------------------
+	public LinkedList<String> input;
+
+
+	
+
+	public AFD(String path) {
+
+		var_Arch = new LinkedList<String>();
+		try {
+			Buff = new BufferedReader(new FileReader(path));
+			do {
+				string_1 = Buff.readLine();
+				var_Arch.add(string_1);
+			}
+
+			while (string_1 != null);
+
+			var_Arch.pollLast();
+			values(var_Arch);
+
+		}
+
+		catch (Exception g) {
+		}
+	}
+
+	public void input(String banderas) {
+		input = new LinkedList<String>();
+		try {
+			System.out.println("Ingrese una cuerda ");
+			banderas = Buff.readLine();
+			if (!banderas.equals("")) {
+				input.pollLast();
+			} else {
+				input.add(banderas);
+			}
+		} catch (IOException d) {
+			System.out.println("Input Ingresado Incorrecto.");
+		}
+
+		for (int a = 0; a < input.size(); a++) {
+			String valfin = input.get(a);
+			evaluate(valfin);
+		}
+	}
+
+	public void values(LinkedList<String> var_Arch) {
+
+				estados = Integer.parseInt(var_Arch.get(0));
+				int[] estadosf = new int[estados];
+
+				for (int i = 0; i < estados; i++){
+					estadosf[i] = i;
+				}
+
+				finaal = (var_Arch.get(1)).replace(",", "").toCharArray();
+				
+				String repeticiones = var_Arch.get(2).replace(",", "");
+				alfabetoo = repeticiones.toCharArray();
+
+				
+		}
+
+	public void cuerdas(String crds) {
+
+		cuerdaValida = new LinkedList<String>();
+
+		try {
+			Buff = new BufferedReader(new FileReader(crds));
+
+			if (datosCuerda != null) {
+				cuerdaValida.pollLast();
+
+			} else {
+
+				datosCuerda = Buff.readLine();
+				cuerdaValida.add(datosCuerda);
+			}
+		}
+
+		catch (Exception e) {
+		}
+
+		for (int a = 0; a < cuerdaValida.size(); a++) {
+
+			String vals = cuerdaValida.get(a);
+			evaluate(vals);
+		}
 	}
 
 	/*
-		Implemente el metodo transition, que recibe de argumento
-		un entero que representa el estado actual del AFD y un
-		caracter que representa el simbolo a consumir, y devuelve 
-		un entero que representa el siguiente estado
-	*/
-	public int getTransition(int currentState, char symbol){
-    try{
-      AFD prueba2 = new AFD(this.file);
-      File file2 = new File(prueba2.file);
-      Scanner obj2 = new Scanner(file2);
-      String alfabeto = obj2.nextLine();
-      String estados = obj2.nextLine();
-      String finales = obj2.nextLine();
-      int states = Integer.parseInt(estados);
-      int cont = 0;
-      String[] alfa = alfabeto.split(",");
-      String[] est = new String[states];
-      String[] fin = finales.split(",");
-      for(String tm:alfa){
-        if(tm.charAt(0) == symbol){
-          cont++;
-      }
-        }
-      if(cont == 0){
-        return 0;
-      }
-      int pos = 0;
-      for(int i = 0; i<states;i++){
-        String x = i+"";
-        est[pos] = x;
-        pos++;
-      }
-      String[] estad = new String[states];
-      char[][] matri = new char[alfa.length][est.length];
-      for(int fila = 0; fila<alfa.length; fila++){
-        String linea = obj2.nextLine();
-        estad = linea.split(",");
-        int val = 0;
-        for(int columna = 0; columna<est.length; columna++){
-          String v = estad[val];
-          matri[fila][columna] = v.charAt(0); 
-          val++;
-        }
-      }
-      int c = 0;
-      for(String t:alfa){
-        if(t.charAt(0) == symbol){
-          break;
-        }else{    
-          c++;
-        }
-      }
-      
-      
-      /*
-      System.out.print("2-D Array: \n[");
-      // printing a 2-D array using two nested loops
-      for (char[] array: matri) { 
-        System.out.print("[");
-        for (char n: array) {  
-          System.out.print(n + " "); // printing each item
-        }
-        System.out.print("]"); // printing new line
-      }
-      System.out.println("]\n");
+	 * Implemente el metodo transition, que recibe de argumento
+	 * un entero que representa el estado actual del AFD y un
+	 * caracter que representa el simbolo a consumir, y devuelve
+	 * un entero que representa el siguiente estado
+	 */
+	public int getTransition(int currentState, char symbol) {
 
-      //System.out.println(Arrays.toString(matri));*/
-     // System.out.println(currentState);
-      //System.out.println(c);
-      int resultado = Character.getNumericValue(matri[c][currentState]);
-      //System.out.println(resultado);
-  		return resultado;
-    }catch(FileNotFoundException ex2){
-      System.out.println("Nunca tendría que activarse, pero por si acaso :v");
-      return 0;
-    }
+		ArrayList<String> trans = new ArrayList<String>();
+		String trns;
+
+		for(int i = 3; i <= var_Arch.size() - 1; i++){
+
+			trns = var_Arch.get(i);
+			trans.add(trns);
+		}
+
+		int x = 0;
+
+		for(int j = 0; j <= alfabetoo.length - 1; j++){
+
+			if (alfabetoo[j] == symbol) {
+				break;
+			}
+
+			x++;
+		}
+
+		String ll = trans.get(x).replace(",", "");
+		char[] transiciones = ll.toCharArray();
+
+		int nuevoestado = Integer.parseInt(String.valueOf(transiciones[currentState]));
+
+		return nuevoestado;
 	}
 
 	/*
-		Implemente el metodo accept, que recibe como argumento
-		un String que representa la cuerda a evaluar, y devuelve
-		un boolean dependiendo de si la cuerda es aceptada o no 
-		por el afd
-	*/
-  //00010110
-  //matriz, longitud sería el alfabeto (para columnas)
-	public boolean accept(String string){
-    try{
-      AFD prueba = new AFD(this.file);
-      //System.out.println(this.file);
-      File file = new File(prueba.file);
-      Scanner obj = new Scanner(file);
-      //Leer alfabeto
-      String alfabeto = obj.nextLine();
-      //Leer estados
-      String estados = obj.nextLine();
-      //Leer finales 
-      String finales = obj.nextLine();
-      int states = Integer.parseInt(estados);
-    
-      String[] alfa = alfabeto.split(",");
-      String[] est = new String[states];
-      String[] fin = finales.split(",");
+	 * Implemente el metodo evaluate, que recibe como argumento
+	 * un String que representa la cuerda a evaluar, y devuelve
+	 * un boolean dependiendo de si la cuerda es aceptada o no
+	 * por el afd
+	 */
+	public boolean evaluate(String string) {
+		boolean Boolean = false;
 
-      int pos = 0;
-      for(int i = 0; i<states;i++){
-        String x = i+"";
-        est[pos] = x;
-        pos++;
-      }
-      
-      //System.out.println(Arrays.toString(alfa));
-      //System.out.println(Arrays.toString(est));
-      //System.out.println(Arrays.toString(fin));
+		try {
+			int state = 1;
 
-        
-    
-    int contador = 0;
-    int posicion = 0;
-    int posFinal = 1;
-    while(contador < string.length()){
-      posFinal = getTransition(posFinal, string.charAt(posicion));
-      posicion += 1;
-      contador++;
-      if(posFinal == 0){
-        return false;
-      }
-    }
-    for(int j = 0; j<fin.length;j++){
-      int valor = Integer.parseInt(fin[j]);
-      if(posFinal == valor){
-        return true;
-      }
-    }
-    
-    obj.close();
-      }catch(FileNotFoundException ex){
-        System.out.println("El archivo no existe");
-      }
-    return false;
-  }
-	/*
-		El metodo main debe recibir como primer argumento el path
-		donde se encuentra el archivo ".afd", como segundo argumento 
-		una bandera ("-f" o "-i"). Si la bandera es "-f", debe recibir
-		como tercer argumento el path del archivo con las cuerdas a 
-		evaluar, y si es "-i", debe empezar a evaluar cuerdas ingresadas
-		por el usuario una a una hasta leer una cuerda vacia (""), en cuyo
-		caso debe terminar. Tiene la libertad de implementar este metodo
-		de la forma que desee. 
-	*/
-	public static void main(String[] args) throws Exception{
-    if(args!=null){
-      if(args[1].equals("-i")){
-        AFD afd = new AFD(args[0]);
-        afd.iflag(args[0],afd);      
-      }
-      else if(args[1].equals("-f")){
-        AFD afd = new AFD(args[0]);
-        afd.fflag(afd.file,args[2]);
-      }
-      else{
-        System.out.println("No ingresó la cantidad de información necesaria, terminando programa...");
-      }
-    }
-    else{
-      System.out.println("No ingresó la cantidad de información necesaria, terminando programa...");
-    }
-		
+			while(true){
+				
+					for (int a = 0; a < string.length(); a++) {
+
+						char chars = string.charAt(a);
+						String charsito = String.valueOf(chars);
+
+						if(charsito.equals("")){
+							break;
+
+						}else{
+							for (int b = 0; b < alfabetoo.length; b++) {
+								
+								if (alfabetoo[b] == chars) {
+									state = getTransition(state, chars);
+
+									if (state == 0) {
+										return false;
+									}else if(a == string.length() - 1){
+
+										if (isFinal(state)) {
+											return true;
+										}else{
+											return false;
+										}
+									}
+									Boolean = true;
+								} else {
+									Boolean = false;
+								}
+							}
+						}
+
+					}
+			
+			}
+
+		}
+
+		catch (NullPointerException o) {
+
+		}
+
+
+		return Boolean;
+
 	}
-  
-  void iflag(String archivo, AFD afd){    
-    while(true){
-      Scanner leer = new Scanner(System.in);
-      System.out.println("Ingrese la cuerda que desea evaluar: ");
-      String cuerda="";
-      cuerda = leer.nextLine();
-      if(cuerda.length()!=0){
-        if(afd.accept(cuerda)==true){
-          System.out.println("La cuerda fue aceptada");
-        }
-        else{
-          System.out.println("La cuerda fue rechazada");
-        }
-      }
-      else{
-        System.out.println("Cuerda nula, cerrando programa...");
-        break;
-      }
-    }
-  }
-  
-  void fflag(String archivo, String txtcuerdas){
-    try{
-      File file2=new File(txtcuerdas);
-      Scanner leer2 = new Scanner(file2);
-      while(leer2.hasNextLine()){
-        String cuerdaf=leer2.nextLine();
-        System.out.println(cuerdaf);
-        if(accept(cuerdaf)==true){
-          System.out.println("La cuerda fue aceptada");
-        }
-        else{
-          System.out.println("La cuerda fue rechazada");
-        }
-      }
-    }
-    catch(FileNotFoundException ex2){
-      System.out.println("Nunca tendría que activarse, pero por si acaso :v");
-      
-    }
-  }
+
+	/*
+	 * Implemente el metodo evaluate_many, que recibe como argumento
+	 * un arreglo de Strings que representa las cuerda a evaluar, y devuelve
+	 * un arreglo booleans dependiendo de si cada cuerda es aceptada o no
+	 * por el afd
+	 */
+	public boolean[] evaluateMany(String[] strings) {
+
+		boolean[] resultado = new boolean[strings.length];
+		System.out.println(Arrays.toString(strings));
+
+		for (int i = 0; i < strings.length; i++) {
+
+			if (strings[i].length() > 0) {
+
+				resultado[i] = evaluate(strings[i]);
+			} else {
+
+				resultado[i] = false;
+			}
+		}
+		// System.out.println(Arrays.toString(resultado));
+		return resultado;
+	}
+
+	/*
+	 * Implemente el metodo isFinal, que devuelve true si el estado enviado
+	 * es un estado final, y false si no lo es
+	 */
+	public boolean isFinal(int currentState) {
+		Boolean bool = false;
+
+			for (int j = 0; j < finaal.length; j++) {
+				int valor = Integer.parseInt(String.valueOf(finaal[j]));
+
+					if (currentState == valor) {
+						bool = true;
+					}
+			}
+		return bool;			 
+	}
 }
